@@ -1,0 +1,2 @@
+jdk=com.abin.srpc.serializer.JdkSerializer
+hessian=com.abin.srpc.serializer.HessianSerializer

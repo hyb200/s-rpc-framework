@@ -1,0 +1,2 @@
+json=com.abin.srpc.serializer.JsonSerializer
+kryo=com.abin.srpc.serializer.KryoSerializer
