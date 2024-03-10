@@ -1,5 +1,8 @@
 package com.abin.srpc.registry;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.task.Task;
 import cn.hutool.json.JSONUtil;
 import com.abin.srpc.config.RegistryConfig;
 import com.abin.srpc.model.ServiceMetaInfo;
@@ -10,7 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -19,6 +25,8 @@ public class EtcdRegistry implements Registry{
     private Client client;
 
     private KV kvClient;
+
+    private final Set<String> localRegisterNodeKeySet = new HashSet<>();
 
     public static final String ETCD_ROOT_PATH = "/rpc/";
 
@@ -29,6 +37,7 @@ public class EtcdRegistry implements Registry{
                 .connectTimeout(Duration.ofMillis(registryConfig.getTimeout()))
                 .build();
         kvClient = client.getKVClient();
+        heartBeat();
     }
 
     @Override
@@ -40,27 +49,27 @@ public class EtcdRegistry implements Registry{
         //  创建一个30s的租约
         long leaseId = 0;
         try {
-            leaseId = leaseClient.grant(300).get().getID();
+            leaseId = leaseClient.grant(30).get().getID();
             //  设置键值对
             String registerKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
             ByteSequence key = ByteSequence.from(registerKey, StandardCharsets.UTF_8);
             ByteSequence val = ByteSequence.from(JSONUtil.toJsonStr(serviceMetaInfo), StandardCharsets.UTF_8);
 
             //  绑定租约
-            PutOption putOption = PutOption.builder()
-                    .withLeaseId(leaseId)
-                    .build();
+            PutOption putOption = PutOption.builder().withLeaseId(leaseId).build();
             kvClient.put(key, val, putOption).get();
+
+            localRegisterNodeKeySet.add(registerKey);
         } catch (Exception e) {
             log.error("服务 {} 注册失败", serviceMetaInfo.getServiceNodeKey());
-            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void unRegister(ServiceMetaInfo serviceMetaInfo) {
-        System.out.println(ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey());
-        kvClient.delete(ByteSequence.from(ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey(), StandardCharsets.UTF_8));
+        String registerKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
+        kvClient.delete(ByteSequence.from(registerKey, StandardCharsets.UTF_8));
+        localRegisterNodeKeySet.remove(registerKey);
     }
 
     @Override
@@ -99,5 +108,38 @@ public class EtcdRegistry implements Registry{
         if (client != null) {
             client.close();
         }
+    }
+
+    @Override
+    public void heartBeat() {
+        CronUtil.schedule("*/10 * * * * *", new Task() {
+            @Override
+            public void execute() {
+                for (String key : localRegisterNodeKeySet) {
+                    try {
+                        List<KeyValue> keyValues = kvClient.get(ByteSequence.from(key, StandardCharsets.UTF_8))
+                                .get()
+                                .getKvs();
+
+                        //  该节点已过期（需要重启节点）
+                        if (CollUtil.isEmpty(keyValues)) {
+                            continue;
+                        }
+
+                        //  节点未过期，重新注册
+                        KeyValue keyValue = keyValues.get(0);
+                        String val = keyValue.getValue().toString(StandardCharsets.UTF_8);
+                        ServiceMetaInfo serviceMetaInfo = JSONUtil.toBean(val, ServiceMetaInfo.class);
+                        register(serviceMetaInfo);
+                    } catch (Exception e) {
+                        throw new RuntimeException(key + "续签失败", e);
+                    }
+                }
+            }
+        });
+
+        //  支持毫秒级任务
+        CronUtil.setMatchSecond(true);
+        CronUtil.start();
     }
 }

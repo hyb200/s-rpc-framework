@@ -24,7 +24,7 @@ public class RegistryTest {
         serviceMetaInfo.setServiceName("userService");
         serviceMetaInfo.setServiceVersion("3.0");
         serviceMetaInfo.setServiceHost("localhost");
-        serviceMetaInfo.setServicePort("1234");
+        serviceMetaInfo.setServicePort(1234);
         registry.register(serviceMetaInfo);
     }
 
@@ -48,8 +48,14 @@ public class RegistryTest {
         serviceMetaInfo.setServiceName("userService");
         serviceMetaInfo.setServiceVersion("3.0");
         serviceMetaInfo.setServiceHost("localhost");
-        serviceMetaInfo.setServicePort("1234");
+        serviceMetaInfo.setServicePort(1234);
 
         registry.unRegister(serviceMetaInfo);
+    }
+
+    @Test
+    public void heartBeat() throws Exception {
+        registry();
+        Thread.sleep(1000L * 60);
     }
 }
