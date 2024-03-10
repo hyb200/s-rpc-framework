@@ -1,7 +1,11 @@
 package com.abin.srpc;
 
+import com.abin.srpc.config.RegistryConfig;
 import com.abin.srpc.config.RpcConfig;
 import com.abin.srpc.constant.RpcConstant;
+import com.abin.srpc.registry.Registry;
+import com.abin.srpc.registry.RegistryFactory;
+import com.abin.srpc.serializer.Serializer;
 import com.abin.srpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +25,12 @@ public class RpcApplication {
     public static void init(RpcConfig config) {
         rpcConfig = config;
         log.info("Rpc init, config = {}", config.toString());
+
+        //  注册中心初始化
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        registry.init(registryConfig);
+        log.info("Registry init, config = {}", registryConfig);
     }
 
     /**
