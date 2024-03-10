@@ -49,7 +49,7 @@ public class EtcdRegistry implements Registry{
         //  创建一个30s的租约
         long leaseId = 0;
         try {
-            leaseId = leaseClient.grant(30).get().getID();
+            leaseId = leaseClient.grant(300).get().getID();
             //  设置键值对
             String registerKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
             ByteSequence key = ByteSequence.from(registerKey, StandardCharsets.UTF_8);
@@ -68,7 +68,11 @@ public class EtcdRegistry implements Registry{
     @Override
     public void unRegister(ServiceMetaInfo serviceMetaInfo) {
         String registerKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
-        kvClient.delete(ByteSequence.from(registerKey, StandardCharsets.UTF_8));
+        try {
+            kvClient.delete(ByteSequence.from(registerKey, StandardCharsets.UTF_8)).get();
+        } catch (Exception e) {
+            throw new RuntimeException(registerKey + "注销失败");
+        }
         localRegisterNodeKeySet.remove(registerKey);
     }
 
@@ -101,6 +105,15 @@ public class EtcdRegistry implements Registry{
     @Override
     public void destory() {
         log.info("当前 Etcd 服务节点下线");
+
+        for (String key : localRegisterNodeKeySet) {
+            try {
+                kvClient.delete(ByteSequence.from(key, StandardCharsets.UTF_8)).get();
+            } catch (Exception e) {
+                throw new RuntimeException(key + "节点下线失败");
+            }
+        }
+
         if (kvClient != null) {
             kvClient.close();
         }
