@@ -7,18 +7,20 @@ import com.abin.srpc.proxy.ServiceProxyFactory;
 import com.abin.srpc.utils.ConfigUtils;
 
 public class ConsumerExample {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         UserService userService = ServiceProxyFactory.getProxy(UserService.class);
         User user = new User();
         user.setName("ikun");
-
-        User newUser = userService.getUser(user);
-        if (newUser != null) {
-            System.out.printf("newUser: %s\n", newUser.getName());
-        } else {
-            System.out.println("user is null");
+        for (int i = 0; i < 3; i ++ ) {
+            User newUser = userService.getUser(user);
+            if (newUser != null) {
+                System.out.printf("newUser: %s\n", newUser.getName());
+            } else {
+                System.out.println("user is null");
+            }
+            int number = userService.getNumber();
+            System.out.println(number);
+            Thread.sleep(5000L);
         }
-        int number = userService.getNumber();
-        System.out.println(number);
     }
 }
