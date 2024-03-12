@@ -1,1 +1,2 @@
 etcd=com.abin.srpc.registry.EtcdRegistry
+zookeeper=com.abin.srpc.registry.ZookeeperRegistry

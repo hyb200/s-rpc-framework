@@ -20,7 +20,7 @@ public class ConsumerExample {
             }
             int number = userService.getNumber();
             System.out.println(number);
-            Thread.sleep(5000L);
+            Thread.sleep(1000L);
         }
     }
 }
