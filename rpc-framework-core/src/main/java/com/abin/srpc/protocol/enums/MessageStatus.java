@@ -2,8 +2,11 @@ package com.abin.srpc.protocol.enums;
 
 import lombok.Getter;
 
+/**
+ * 协议消息状态枚举
+ */
 @Getter
-public enum ProtocolMessageStatusEnum {
+public enum MessageStatus {
     OK("ok", 20),
     BAD_REQUEST("badRequest", 40),
     BAD_RESPONSE("badResponse", 50);
@@ -12,7 +15,7 @@ public enum ProtocolMessageStatusEnum {
 
     private final int val;
 
-    ProtocolMessageStatusEnum(String text, int val) {
+    MessageStatus(String text, int val) {
         this.text = text;
         this.val = val;
     }
@@ -22,12 +25,12 @@ public enum ProtocolMessageStatusEnum {
      * @param val
      * @return
      */
-    public static ProtocolMessageStatusEnum getEnumByValue(int val) {
-        for (ProtocolMessageStatusEnum anEnum : ProtocolMessageStatusEnum.values()) {
+    public static MessageStatus getEnumByValue(int val) {
+        for (MessageStatus anEnum : MessageStatus.values()) {
             if (anEnum.val == val) {
                 return anEnum;
             }
         }
-        return null;
+        throw new IllegalArgumentException("unknown protocol message status: " + val);
     }
 }

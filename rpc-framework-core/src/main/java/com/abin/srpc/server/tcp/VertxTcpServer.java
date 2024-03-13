@@ -8,6 +8,8 @@ import io.vertx.core.net.NetServer;
 import io.vertx.core.parsetools.RecordParser;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+
 @Slf4j
 public class VertxTcpServer implements HttpServer {
 
@@ -23,6 +25,15 @@ public class VertxTcpServer implements HttpServer {
         //  创建 TCP 服务器
         NetServer server = vertx.createNetServer();
 
+//        server.connectHandler(socket -> socket.handler(buffer -> {
+//            byte[] req = buffer.getBytes();
+//            System.out.println(Arrays.toString(req));
+//
+//            socket.write(Buffer.buffer(handleRequest(null)));
+//        }))
+//                .listen(port)
+//                        .onSuccess(event -> log.info("TCP Server started on port {}", port))
+//                                .onFailure(event -> log.error("Failed to start TCP Server on port {}", port));
 
         //  处理请求
         server.connectHandler(new TcpServerHandler());

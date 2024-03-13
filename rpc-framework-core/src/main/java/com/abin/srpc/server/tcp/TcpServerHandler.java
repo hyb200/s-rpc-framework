@@ -5,7 +5,7 @@ import com.abin.srpc.model.RpcResponse;
 import com.abin.srpc.protocol.ProtocolMessage;
 import com.abin.srpc.protocol.ProtocolMessageDecoder;
 import com.abin.srpc.protocol.ProtocolMessageEncoder;
-import com.abin.srpc.protocol.enums.ProtocolMessageTypeEnum;
+import com.abin.srpc.protocol.enums.MessageType;
 import com.abin.srpc.registry.LocalRegistry;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -46,7 +46,7 @@ public class TcpServerHandler implements Handler<NetSocket> {
 
             //  发送响应、编码
             ProtocolMessage.Header header = protocolMessage.getHeader();
-            header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getKey());
+            header.setType((byte) MessageType.RESPONSE.getKey());
             ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, rpcResponse);
 
             try {

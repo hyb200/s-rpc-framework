@@ -9,8 +9,8 @@ import com.abin.srpc.protocol.ProtocolConstant;
 import com.abin.srpc.protocol.ProtocolMessage;
 import com.abin.srpc.protocol.ProtocolMessageDecoder;
 import com.abin.srpc.protocol.ProtocolMessageEncoder;
-import com.abin.srpc.protocol.enums.ProtocolMessageSerializerEnum;
-import com.abin.srpc.protocol.enums.ProtocolMessageTypeEnum;
+import com.abin.srpc.protocol.enums.MessageSerializer;
+import com.abin.srpc.protocol.enums.MessageType;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
@@ -40,8 +40,8 @@ public class VertxTcpClient {
                     ProtocolMessage.Header header = new ProtocolMessage.Header();
                     header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
                     header.setVersion(ProtocolConstant.PROTOCOL_VERSION);
-                    header.setSerializer((byte) ProtocolMessageSerializerEnum.getEnumByValue(RpcApplication.getRpcConfig().getSerializer()).getKey());
-                    header.setType((byte) ProtocolMessageTypeEnum.REQUEST.getKey());
+                    header.setSerializer((byte) MessageSerializer.getEnumByValue(RpcApplication.getRpcConfig().getSerializer()).getKey());
+                    header.setType((byte) MessageType.REQUEST.getKey());
                     // 生成全局请求 ID
                     header.setRequestId(IdUtil.getSnowflakeNextId());
                     protocolMessage.setHeader(header);
@@ -72,18 +72,24 @@ public class VertxTcpClient {
                 });
 
         RpcResponse rpcResponse = responseFuture.get();
-        // 记得关闭连接
+        //  关闭连接
         netClient.close();
         return rpcResponse;
     }
 
-//    public void start() {
-//        Vertx vertx = Vertx.vertx();
-//
-//        vertx.createNetClient().connect(8888, "localhost", result -> {
-//            if (result.succeeded()) {
-//                System.out.println("Connected to TCP server");
-//                NetSocket socket = result.result();
+    /**
+     * 调试 vertxclient 用
+     */
+    public void start() {
+        Vertx vertx = Vertx.vertx();
+
+        vertx.createNetClient().connect(8888, "localhost", result -> {
+            if (result.succeeded()) {
+                System.out.println("Connected to TCP server");
+                NetSocket socket = result.result();
+                socket.write("this is tcp client!!!");
+
+                //  测试粘包
 //                for (int i = 0; i < 1000; i ++ ) {
 //                    Buffer buffer = Buffer.buffer();
 //                    String str = "hello, server!=hello, server!=hello, server!=hello, server!=";
@@ -93,18 +99,17 @@ public class VertxTcpClient {
 //                    buffer.appendBytes(str.getBytes());
 //                    socket.write(buffer);
 //                }
-//
-//
-//                socket.handler(buffer -> System.out.println(
-//                        "Receive response from server: " + buffer.toString()
-//                ));
-//            } else {
-//                System.out.println("Failed to connect to TCP server");
-//            }
-//        });
-//    }
-//
-//    public static void main(String[] args) {
-//        new VertxTcpClient().start();
-//    }
+
+                socket.handler(buffer -> System.out.println(
+                        "Receive response from server: " + buffer.length() + " " + buffer
+                ));
+            } else {
+                System.out.println("Failed to connect to TCP server");
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        new VertxTcpClient().start();
+    }
 }

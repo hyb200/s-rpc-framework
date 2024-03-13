@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 协议消息结构
+ * @param <T>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

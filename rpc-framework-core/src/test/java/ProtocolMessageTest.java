@@ -5,9 +5,9 @@ import com.abin.srpc.protocol.ProtocolConstant;
 import com.abin.srpc.protocol.ProtocolMessage;
 import com.abin.srpc.protocol.ProtocolMessageDecoder;
 import com.abin.srpc.protocol.ProtocolMessageEncoder;
-import com.abin.srpc.protocol.enums.ProtocolMessageSerializerEnum;
-import com.abin.srpc.protocol.enums.ProtocolMessageStatusEnum;
-import com.abin.srpc.protocol.enums.ProtocolMessageTypeEnum;
+import com.abin.srpc.protocol.enums.MessageSerializer;
+import com.abin.srpc.protocol.enums.MessageStatus;
+import com.abin.srpc.protocol.enums.MessageType;
 import io.vertx.core.buffer.Buffer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,9 +21,9 @@ public class ProtocolMessageTest {
         ProtocolMessage.Header header = new ProtocolMessage.Header();
         header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
         header.setVersion(ProtocolConstant.PROTOCOL_VERSION);
-        header.setSerializer((byte) ProtocolMessageSerializerEnum.JDK.getKey());
-        header.setType((byte) ProtocolMessageTypeEnum.REQUEST.getKey());
-        header.setStatus((byte) ProtocolMessageStatusEnum.OK.getVal());
+        header.setSerializer((byte) MessageSerializer.JDK.getKey());
+        header.setType((byte) MessageType.REQUEST.getKey());
+        header.setStatus((byte) MessageStatus.OK.getVal());
         header.setRequestId(IdUtil.getSnowflakeNextId());
         header.setBodyLength(0);
 

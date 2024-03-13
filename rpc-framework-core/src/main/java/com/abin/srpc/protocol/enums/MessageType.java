@@ -3,7 +3,7 @@ package com.abin.srpc.protocol.enums;
 import lombok.Getter;
 
 @Getter
-public enum ProtocolMessageTypeEnum {
+public enum MessageType {
 
     REQUEST(0),
     RESPONSE(1),
@@ -12,7 +12,7 @@ public enum ProtocolMessageTypeEnum {
 
     private final int key;
 
-    ProtocolMessageTypeEnum(int key) {
+    MessageType(int key) {
         this.key = key;
     }
 
@@ -21,12 +21,12 @@ public enum ProtocolMessageTypeEnum {
      * @param key
      * @return
      */
-    public static ProtocolMessageTypeEnum getEnumByKey(int key) {
-        for (ProtocolMessageTypeEnum anEnum : ProtocolMessageTypeEnum.values()) {
+    public static MessageType getEnumByKey(int key) {
+        for (MessageType anEnum : MessageType.values()) {
             if (anEnum.key == key) {
                 return anEnum;
             }
         }
-        return null;
+        throw new IllegalArgumentException("unknown protocol message type: " + key);
     }
 }
