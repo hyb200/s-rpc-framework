@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollUtil;
 import com.abin.srpc.RpcApplication;
 import com.abin.srpc.config.RpcConfig;
 import com.abin.srpc.constant.RpcConstant;
+import com.abin.srpc.loadbalancer.LoadBalancer;
+import com.abin.srpc.loadbalancer.LoadBalancerFactory;
 import com.abin.srpc.model.RpcRequest;
 import com.abin.srpc.model.RpcResponse;
 import com.abin.srpc.model.ServiceMetaInfo;
@@ -13,7 +15,9 @@ import com.abin.srpc.server.tcp.VertxTcpClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 服务代理（JDK 动态代理）
@@ -49,7 +53,10 @@ public class ServiceProxy implements InvocationHandler {
                 throw new RuntimeException("暂无服务地址");
             }
 
-            ServiceMetaInfo info = serviceMetaInfoList.get(0);
+            LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
+            Map<String, Object> requestParams = new HashMap<>();
+            requestParams.put("methodName", rpcRequest.getMethodName());
+            ServiceMetaInfo info = loadBalancer.select(requestParams, serviceMetaInfoList);
 
             //  发送 TCP 请求
             RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, info);

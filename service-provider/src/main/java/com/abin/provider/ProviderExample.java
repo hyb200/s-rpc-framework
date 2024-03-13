@@ -28,7 +28,7 @@ public class ProviderExample {
 
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName(serviceName);
-        serviceMetaInfo.setServiceAddress(rpcConfig.getServerHost() + ":" + rpcConfig.getServerPort());
+//        serviceMetaInfo.setServiceAddress(rpcConfig.getServerHost() + ":" + rpcConfig.getServerPort());
         serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
         serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
         try {

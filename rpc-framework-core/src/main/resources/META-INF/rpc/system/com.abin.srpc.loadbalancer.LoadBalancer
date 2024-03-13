@@ -1,0 +1,3 @@
+consistentHash=com.abin.srpc.loadbalancer.ConsistentHashLoadBalancer
+random=com.abin.srpc.loadbalancer.RandomLoadBalancer
+poll=com.abin.srpc.loadbalancer.PollLoadBalancer
