@@ -10,6 +10,7 @@ import com.abin.srpc.registry.Registry;
 import com.abin.srpc.registry.RegistryFactory;
 import com.abin.srpc.server.HttpServer;
 import com.abin.srpc.server.VertxHttpServer;
+import com.abin.srpc.server.tcp.VertxTcpServer;
 
 public class ProviderExample {
     public static void main(String[] args) {
@@ -38,7 +39,7 @@ public class ProviderExample {
 
 
         //  启动 web 服务
-        HttpServer httpServer = new VertxHttpServer();
-        httpServer.init(RpcApplication.getRpcConfig().getServerPort());
+        VertxTcpServer vertxTcpServer = new VertxTcpServer();
+        vertxTcpServer.init(9999);
     }
 }
