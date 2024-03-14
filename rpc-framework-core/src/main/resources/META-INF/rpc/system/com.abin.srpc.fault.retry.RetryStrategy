@@ -1,0 +1,2 @@
+fixedInterval=com.abin.srpc.fault.retry.strategy.FixedIntervalRetryStrategy
+no=com.abin.srpc.fault.retry.strategy.NoRetryStrategy

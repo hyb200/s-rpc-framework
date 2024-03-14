@@ -1,5 +1,6 @@
 package com.abin.srpc.config;
 
+import com.abin.srpc.fault.RetryStrategyKeys;
 import com.abin.srpc.loadbalancer.LoadBalancerKeys;
 import com.abin.srpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -45,4 +46,9 @@ public class RpcConfig {
      * 负载均衡器
      */
     private String loadBalancer = LoadBalancerKeys.POLLING;
+
+    /**
+     * 重试器
+     */
+    private String retryStrategy = RetryStrategyKeys.NO;
 }
