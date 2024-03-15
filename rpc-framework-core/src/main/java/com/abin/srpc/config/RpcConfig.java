@@ -26,7 +26,7 @@ public class RpcConfig {
     /**
      * 服务器端口号
      */
-    private Integer serverPort = 8080;
+    private Integer serverPort = 9999;
 
     /**
      * 模拟调用

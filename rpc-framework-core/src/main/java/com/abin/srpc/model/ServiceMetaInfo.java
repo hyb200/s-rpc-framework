@@ -22,7 +22,7 @@ public class ServiceMetaInfo {
     /**
      * 服务地址
      */
-    private String serviceAddress;
+//    private String serviceAddress;
 
     /**
      * 服务主机
