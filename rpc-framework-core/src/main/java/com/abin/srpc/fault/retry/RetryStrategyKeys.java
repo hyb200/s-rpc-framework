@@ -1,4 +1,4 @@
-package com.abin.srpc.fault;
+package com.abin.srpc.fault.retry;
 
 public final class RetryStrategyKeys {
     private RetryStrategyKeys() {}

@@ -6,6 +6,8 @@ import com.abin.srpc.config.RpcConfig;
 import com.abin.srpc.constant.RpcConstant;
 import com.abin.srpc.fault.retry.RetryStrategy;
 import com.abin.srpc.fault.retry.RetryStrategyFactory;
+import com.abin.srpc.fault.tolerant.TolerantStrategy;
+import com.abin.srpc.fault.tolerant.TolerantStrategyFactory;
 import com.abin.srpc.loadbalancer.LoadBalancer;
 import com.abin.srpc.loadbalancer.LoadBalancerFactory;
 import com.abin.srpc.model.RpcRequest;
@@ -41,8 +43,6 @@ public class ServiceProxy implements InvocationHandler {
                 .args(args)
                 .build();
 
-        try {
-
             //  从注册中心获取服务请求地址
             RpcConfig rpcConfig = RpcApplication.getRpcConfig();
             Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
@@ -60,13 +60,18 @@ public class ServiceProxy implements InvocationHandler {
             requestParams.put("methodName", rpcRequest.getMethodName());
             ServiceMetaInfo info = loadBalancer.select(requestParams, serviceMetaInfoList);
 
-            //  发送 TCP 请求
+        RpcResponse rpcResponse;
+        try {
+            //  发送 TCP 请求，使用重试机制
             RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
-            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
+            rpcResponse = retryStrategy.doRetry(() ->
                     VertxTcpClient.doRequest(rpcRequest, info));
             return rpcResponse.getData();
         } catch (Exception e) {
-            throw new RuntimeException("调用失败");
+            //  容错机制
+            TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+            rpcResponse = tolerantStrategy.doTolerant(null, e);
         }
+        return rpcResponse.getData();
     }
 }

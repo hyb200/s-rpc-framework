@@ -1,0 +1,4 @@
+failBack=com.abin.srpc.fault.tolerant.strategy.FailBackTolerantStrategy
+failFast=com.abin.srpc.fault.tolerant.strategy.FailFastTolerantStrategy
+failOver=com.abin.srpc.fault.tolerant.strategy.FailOverTolerantStrategy
+failSafe=com.abin.srpc.fault.tolerant.strategy.FailSafeTolerantStrategy
