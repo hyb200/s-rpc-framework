@@ -1,0 +1,6 @@
+#rpc:
+#  serverHost: localhost
+#  serverPort: 1234
+#  registryConfig:
+#    registry: zookeeper
+#    address: localhost:2181

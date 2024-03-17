@@ -1,0 +1,9 @@
+rpc:
+  name: s-rpc
+  version: 2.0
+  serverPort: 9988
+  mock: false
+  serializer: hessian
+  registryConfig:
+    registry: zookeeper
+    address: localhost:2181
